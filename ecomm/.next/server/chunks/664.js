@@ -861,6 +861,12 @@ function withRouter(ComposedComponent) {
 "use strict";
 
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
@@ -1433,9 +1439,10 @@ class Router {
     }
 
     const shouldResolveHref = options._h || options._shouldResolveHref || pathNoQueryHash(url) === pathNoQueryHash(as);
-    const nextState = { ...this.state
-    }; // for static pages with query params in the URL we delay
+
+    const nextState = _objectSpread({}, this.state); // for static pages with query params in the URL we delay
     // marking the router ready until after the query is updated
+
 
     if (options._h) {
       this.isReady = true;
@@ -1479,9 +1486,9 @@ class Router {
       nextState.asPath = cleanedAs;
       Router.events.emit('hashChangeStart', as, routeProps); // TODO: do we need the resolved href when only a hash change?
 
-      this.changeState(method, url, as, { ...options,
+      this.changeState(method, url, as, _objectSpread(_objectSpread({}, options), {}, {
         scroll: false
-      });
+      }));
 
       if (scroll) {
         this.scrollToHash(cleanedAs);
@@ -1570,9 +1577,7 @@ class Router {
       });
 
       if (effect.type === 'rewrite') {
-        query = { ...query,
-          ...effect.parsedAs.query
-        };
+        query = _objectSpread(_objectSpread({}, query), effect.parsedAs.query);
         resolvedAs = effect.asPath;
         pathname = effect.resolvedHref;
         parsed.pathname = effect.resolvedHref;
@@ -1686,13 +1691,13 @@ class Router {
         x: 0,
         y: 0
       } : null;
-      await this.set({ ...nextState,
+      await this.set(_objectSpread(_objectSpread({}, nextState), {}, {
         route,
         pathname,
         query,
         asPath: cleanedAs,
         isFallback: false
-      }, routeInfo, forcedScroll !== null && forcedScroll !== void 0 ? forcedScroll : resetScroll).catch(e => {
+      }), routeInfo, forcedScroll !== null && forcedScroll !== void 0 ? forcedScroll : resetScroll).catch(e => {
         if (e.cancelled) error = error || e;else throw e;
       });
 
@@ -1975,9 +1980,7 @@ class Router {
     if (effects.type === 'rewrite') {
       parsed.pathname = effects.resolvedHref;
       pathname = effects.resolvedHref;
-      query = { ...query,
-        ...effects.parsedAs.query
-      };
+      query = _objectSpread(_objectSpread({}, query), effects.parsedAs.query);
       resolvedAs = effects.asPath;
       url = (0, _utils).formatWithValidation(parsed);
     }

@@ -426,6 +426,18 @@ exports["default"] = _default;
 
 
 
+const _excluded = ["strategy"];
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
@@ -536,9 +548,10 @@ function getPreNextScripts(context, props) {
   } = context;
   return (scriptLoader.beforeInteractive || []).map((file, index) => {
     const {
-      strategy,
-      ...scriptProps
-    } = file;
+      strategy
+    } = file,
+          scriptProps = _objectWithoutProperties(file, _excluded);
+
     return /*#__PURE__*/_react.default.createElement("script", Object.assign({}, scriptProps, {
       key: scriptProps.src || index,
       defer: !disableOptimizedLoading,
@@ -796,8 +809,7 @@ class Head extends _react.Component {
     _react.default.Children.forEach(children, child => {
       if (child.type === _script.default) {
         if (child.props.strategy === 'beforeInteractive') {
-          scriptLoader.beforeInteractive = (scriptLoader.beforeInteractive || []).concat([{ ...child.props
-          }]);
+          scriptLoader.beforeInteractive = (scriptLoader.beforeInteractive || []).concat([_objectSpread({}, child.props)]);
           return;
         } else if (['lazyOnload', 'afterInteractive'].includes(child.props.strategy)) {
           scriptLoaderItems.push(child.props);
@@ -822,15 +834,17 @@ class Head extends _react.Component {
         var ref, ref10;
         return c === null || c === void 0 ? void 0 : (ref = c.props) === null || ref === void 0 ? void 0 : (ref10 = ref.href) === null || ref10 === void 0 ? void 0 : ref10.startsWith(url);
       })) {
-        const newProps = { ...(c.props || {}),
+        const newProps = _objectSpread(_objectSpread({}, c.props || {}), {}, {
           'data-href': c.props.href,
           href: undefined
-        };
+        });
+
         return /*#__PURE__*/_react.default.cloneElement(c, newProps);
       } else if (c === null || c === void 0 ? void 0 : (ref6 = c.props) === null || ref6 === void 0 ? void 0 : ref6.children) {
-        const newProps = { ...(c.props || {}),
+        const newProps = _objectSpread(_objectSpread({}, c.props || {}), {}, {
           children: this.makeStylesheetInert(c.props.children)
-        };
+        });
+
         return /*#__PURE__*/_react.default.cloneElement(c, newProps);
       }
 
